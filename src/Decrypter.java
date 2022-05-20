@@ -1,13 +1,13 @@
-import javax.crypto.Cipher;
+import javax.crypto.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.spec.KeySpec;
 import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import javax.crypto.SecretKeyFactory;
 import java.security.AlgorithmParameters;
 import javax.crypto.spec.IvParameterSpec;
 import java.util.Arrays;
@@ -125,51 +125,48 @@ public class Decrypter{
                 bw.close();
     }
 
-    public void aaa(String username){
-        System.out.println("___________________________________");
+    public String aaa(String username, String pass, String url, String com, String ke, String iv) throws InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+//        System.out.println("___________________________________");
 
-        try {
-            String fileName = username + ".txt";
-            String actual = null;
-            actual = Files.readString(Path.of(fileName));
-            String [] account = actual.split("\\n");
-            for (int i = 0; i<account.length ; i++){
-                String[] ap = account[i].split(",");
-                String user = ap[0];
 
-                String password = ap[1];
-                String url = ap[2];
-                String comm = ap[3];
-                String keya = ap[4];
+                String user = username;
+                String password = pass;
+                String urli =url;
+                String comm = com;
+                String keya = ke;
                 byte [] key1 = Base64.getDecoder().decode(keya);
                 SecretKey key2 = new SecretKeySpec(key1, "AES");
-                String iv1 = ap[5];
+                String iv1 = iv;
                 byte [] iv2 = Base64.getDecoder().decode(iv1);
                 dcipher.init(Cipher.DECRYPT_MODE, key2, new IvParameterSpec(iv2));
                 byte[] decryptedData = Base64.getDecoder().decode(user);
                 byte[] decryptedData1 = Base64.getDecoder().decode(password);
-                byte[] decryptedData2 = Base64.getDecoder().decode(url);
+                byte[] decryptedData2 = Base64.getDecoder().decode(urli);
                 byte[] decryptedData3 = Base64.getDecoder().decode(comm);
                 byte[] utf8 = dcipher.doFinal(decryptedData);
                 byte[] utf81 = dcipher.doFinal(decryptedData1);
                 byte[] utf82 = dcipher.doFinal(decryptedData2);
                 byte[] utf83 = dcipher.doFinal(decryptedData3);
                 String name = new String(utf8);
-                String pass = new String(utf81);
+                String passi = new String(utf81);
                 String ur = new String(utf82);
                 String cm = new String(utf83);
                 byte[] encoded = key2.getEncoded();
                 String out = Base64.getEncoder().withoutPadding().encodeToString(encoded);
                 String iv3 = Base64.getEncoder().withoutPadding().encodeToString(iv2);
 
-                System.out.println("URL: " + ur +
+                String p = "URL: " + ur +
                         ", " + "Username: " + name +
-                        ", " + "Password: " + pass +
-                        ", " + "Comment: " + cm);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+                        ", " + "Password: " + passi +
+                        ", " + "Comment: " + cm;
+//
+//                System.out.println("URL: " + ur +
+//                        ", " + "Username: " + name +
+//                        ", " + "Password: " + pass +
+//                        ", " + "Comment: " + cm);
+
+                return p;
+
     }
 
     public void decryptVardai2(String name, String pass, String ke, String II) throws Exception {

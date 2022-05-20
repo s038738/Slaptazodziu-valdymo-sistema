@@ -36,7 +36,6 @@ public class Decrypter{
 
     public String encrypt(String username, String password, String url, String comment) throws Exception {
         System.out.println("-----------E N C R Y P T-----------");
-
         String fileName = username + ".txt";
         Path path = Paths.get(fileName);
         OutputStream output = new BufferedOutputStream(Files.newOutputStream(path));
@@ -44,8 +43,6 @@ public class Decrypter{
         dcipher.init(Cipher.ENCRYPT_MODE, key);
         AlgorithmParameters params = dcipher.getParameters();
         iv = params.getParameterSpec(IvParameterSpec.class).getIV();
-        //String data = username +","+ password+","+url+","+comment;
-        //System.out.println(iv);
         byte[] utf8EncryptedData1 = dcipher.doFinal(username.getBytes());
         byte[] utf8EncryptedData2 = dcipher.doFinal(password.getBytes());
         byte[] utf8EncryptedData3 = dcipher.doFinal(url.getBytes());
@@ -58,13 +55,10 @@ public class Decrypter{
 
         byte[] encoded = key.getEncoded();
         String out = Base64.getEncoder().withoutPadding().encodeToString(encoded);
-        System.out.println("Key: "+key);
-        System.out.println("Key out: " + out);
 
         String iv1 = Base64.getEncoder().withoutPadding().encodeToString(iv);
-        System.out.println("IV out: "+ iv1);
 
-        System.out.println("Encrypted info info : " + base64EncryptedData1 +","+base64EncryptedData2 +","+base64EncryptedData3 +","+base64EncryptedData4 +","+out+","+iv1);
+        //System.out.println("Encrypted info info : " + base64EncryptedData1 +","+base64EncryptedData2 +","+base64EncryptedData3 +","+base64EncryptedData4 +","+out+","+iv1);
         writer.write(base64EncryptedData1 +","+base64EncryptedData2 +","+base64EncryptedData3 +","+base64EncryptedData4 +","+out+","+iv1);
 
         writer.close();
@@ -72,111 +66,171 @@ public class Decrypter{
 
         return base64EncryptedData1;
     }
+    public String encryptAppend(String username, String password, String url, String comment) throws Exception {
+        System.out.println("-----------ENCRYPT APPEND-----------");
 
-    public String encryptTest(String username) throws Exception {
+        String fileName = username + ".txt";
+        File file = new File(fileName);
+        FileWriter fw = new FileWriter(file,true);
+        BufferedWriter bw = new BufferedWriter(fw);
+
         dcipher.init(Cipher.ENCRYPT_MODE, key);
         AlgorithmParameters params = dcipher.getParameters();
         iv = params.getParameterSpec(IvParameterSpec.class).getIV();
+
         byte[] utf8EncryptedData1 = dcipher.doFinal(username.getBytes());
+        byte[] utf8EncryptedData2 = dcipher.doFinal(password.getBytes());
+        byte[] utf8EncryptedData3 = dcipher.doFinal(url.getBytes());
+        byte[] utf8EncryptedData4 = dcipher.doFinal(comment.getBytes());
+
         String base64EncryptedData1 = Base64.getEncoder().encodeToString(utf8EncryptedData1);
+        String base64EncryptedData2 = Base64.getEncoder().encodeToString(utf8EncryptedData2);
+        String base64EncryptedData3 = Base64.getEncoder().encodeToString(utf8EncryptedData3);
+        String base64EncryptedData4 = Base64.getEncoder().encodeToString(utf8EncryptedData4);
+
+        byte[] encoded = key.getEncoded();
+        String out = Base64.getEncoder().withoutPadding().encodeToString(encoded);
+        String iv1 = Base64.getEncoder().withoutPadding().encodeToString(iv);
+        //System.out.println("Encrypted info info : " + base64EncryptedData1 +","+base64EncryptedData2 +","+base64EncryptedData3 +","+base64EncryptedData4 +","+out+","+iv1);
+        bw.write("\n" + base64EncryptedData1 +","+base64EncryptedData2 +","+base64EncryptedData3 +","+base64EncryptedData4 +","+out+","+iv1);
+        bw.close();
         return base64EncryptedData1;
     }
 
 
-    public String decrypt(String base64EncryptedData) throws Exception {
-        dcipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
-        //byte[] decryptedData = new sun.misc.BASE64Decoder().decodeBuffer(base64EncryptedData);
-        byte[] decryptedData = Base64.getDecoder().decode(base64EncryptedData);
-        byte[] utf8 = dcipher.doFinal(decryptedData);
-        System.out.println(new String(utf8));
-        return new String(utf8, "UTF8");
+    public void encryptVardai2(String name, String pass) throws Exception {
+        System.out.println("-----------ENCRYPT VARDAI-----------");
+
+        String fileName = "vardai.txt";
+        File file = new File(fileName);
+        FileWriter fw = new FileWriter(file,true);
+        BufferedWriter bw = new BufferedWriter(fw);
+                String a = name;
+                String b = pass;
+
+                dcipher.init(Cipher.ENCRYPT_MODE, key);
+                AlgorithmParameters params = dcipher.getParameters();
+                iv = params.getParameterSpec(IvParameterSpec.class).getIV();
+
+                byte[] utf8EncryptedData1 = dcipher.doFinal(a.getBytes());
+                byte[] utf8EncryptedData2 = dcipher.doFinal(b.getBytes());
+
+                String base64EncryptedData1 = Base64.getEncoder().encodeToString(utf8EncryptedData1);
+                String base64EncryptedData2 = Base64.getEncoder().encodeToString(utf8EncryptedData2);
+
+                byte[] encoded = key.getEncoded();
+                String out = Base64.getEncoder().withoutPadding().encodeToString(encoded);
+                String iv1 = Base64.getEncoder().withoutPadding().encodeToString(iv);
+                bw.write("\n" + base64EncryptedData1 + "," + base64EncryptedData2 + "," + out + "," + iv1);
+                bw.close();
     }
 
-    public String decryptIV(String base64EncryptedData,SecretKey key) throws Exception {
-        dcipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
-        //byte[] decryptedData = new sun.misc.BASE64Decoder().decodeBuffer(base64EncryptedData);
-        byte[] decryptedData = Base64.getDecoder().decode(base64EncryptedData);
-        byte[] utf8 = dcipher.doFinal(decryptedData);
+    public void aaa(String username){
+        System.out.println("___________________________________");
 
-        return new String(utf8, "UTF8");
+        try {
+            String fileName = username + ".txt";
+            String actual = null;
+            actual = Files.readString(Path.of(fileName));
+            String [] account = actual.split("\\n");
+            for (int i = 0; i<account.length ; i++){
+                String[] ap = account[i].split(",");
+                String user = ap[0];
+
+                String password = ap[1];
+                String url = ap[2];
+                String comm = ap[3];
+                String keya = ap[4];
+                byte [] key1 = Base64.getDecoder().decode(keya);
+                SecretKey key2 = new SecretKeySpec(key1, "AES");
+                String iv1 = ap[5];
+                byte [] iv2 = Base64.getDecoder().decode(iv1);
+                dcipher.init(Cipher.DECRYPT_MODE, key2, new IvParameterSpec(iv2));
+                byte[] decryptedData = Base64.getDecoder().decode(user);
+                byte[] decryptedData1 = Base64.getDecoder().decode(password);
+                byte[] decryptedData2 = Base64.getDecoder().decode(url);
+                byte[] decryptedData3 = Base64.getDecoder().decode(comm);
+                byte[] utf8 = dcipher.doFinal(decryptedData);
+                byte[] utf81 = dcipher.doFinal(decryptedData1);
+                byte[] utf82 = dcipher.doFinal(decryptedData2);
+                byte[] utf83 = dcipher.doFinal(decryptedData3);
+                String name = new String(utf8);
+                String pass = new String(utf81);
+                String ur = new String(utf82);
+                String cm = new String(utf83);
+                byte[] encoded = key2.getEncoded();
+                String out = Base64.getEncoder().withoutPadding().encodeToString(encoded);
+                String iv3 = Base64.getEncoder().withoutPadding().encodeToString(iv2);
+
+                System.out.println("URL: " + ur +
+                        ", " + "Username: " + name +
+                        ", " + "Password: " + pass +
+                        ", " + "Comment: " + cm);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
-    public String decryptNoText(String fileName) throws Exception {
-        System.out.println("-----------D E C R Y P T-----------");
-        String actual = Files.readString(Path.of(fileName));
-        String [] account = actual.split(",");
-        String username = account[0];
-        String password = account[1];
-        String url = account[2];
-        String comment = account[3];
-        String keya = account[4];
+    public void decryptVardai2(String name, String pass, String ke, String II) throws Exception {
+        System.out.println("-----------DECRYPT VARDAI-----------");
+        String fileName = "vardai.txt";
+        File file = new File(fileName);
+        FileWriter fw = new FileWriter(file,true);
+        BufferedWriter bw = new BufferedWriter(fw);
+
+                String username = name;
+                String password = pass;
+                String keya = ke;
+                byte [] key1 = Base64.getDecoder().decode(keya);
+                SecretKey key2 = new SecretKeySpec(key1, "AES");
+                String iv1 = II;
+                byte [] iv2 = Base64.getDecoder().decode(iv1);
+                dcipher.init(Cipher.DECRYPT_MODE, key2, new IvParameterSpec(iv2));
+                byte[] decryptedData = Base64.getDecoder().decode(username);
+                byte[] decryptedData1 = Base64.getDecoder().decode(password);
+
+                byte[] utf8 = dcipher.doFinal(decryptedData);
+                byte[] utf81 = dcipher.doFinal(decryptedData1);
+
+                String name1 = new String(utf8);
+                String pass1 = new String(utf81);
+
+                byte[] encoded = key2.getEncoded();
+                String out = Base64.getEncoder().withoutPadding().encodeToString(encoded);
+
+                String iv3 = Base64.getEncoder().withoutPadding().encodeToString(iv2);
+
+                //System.out.println("Decrypted info : "+name1 +","+pass1 +","+out + ","+iv3);
+                bw.write("\n" + name1 +","+pass1 +","+out + ","+iv3);
+                bw.close();
+    }
+
+    public void addUSer(String name, String pass, String ke, String II) throws Exception {
+        System.out.println("-----------DECRYPT VARDAI-----------");
+        String fileName = "vardai.txt";
+        File file = new File(fileName);
+        FileWriter fw = new FileWriter(file,true);
+        BufferedWriter bw = new BufferedWriter(fw);
+
+        bw.write("\n" + name +","+pass +","+ke + ","+II);
+        bw.close();
+    }
+
+    public String simpleDecrypt(String name, String ke, String II) throws Exception {
+        String username = name;
+        String keya = ke;
         byte [] key1 = Base64.getDecoder().decode(keya);
         SecretKey key2 = new SecretKeySpec(key1, "AES");
-        System.out.println("Key in: " +keya + ", \nKey origin: "+ key2);
-
-        String iv1 = account[5];
+        String iv1 = II;
         byte [] iv2 = Base64.getDecoder().decode(iv1);
-        System.out.println("IV in: " + iv1);
-
         dcipher.init(Cipher.DECRYPT_MODE, key2, new IvParameterSpec(iv2));
-        //byte[] decryptedData = new sun.misc.BASE64Decoder().decodeBuffer(base64EncryptedData);
         byte[] decryptedData = Base64.getDecoder().decode(username);
-        byte[] decryptedData1 = Base64.getDecoder().decode(password);
-        byte[] decryptedData2 = Base64.getDecoder().decode(url);
-        byte[] decryptedData3 = Base64.getDecoder().decode(comment);
 
         byte[] utf8 = dcipher.doFinal(decryptedData);
-        byte[] utf81 = dcipher.doFinal(decryptedData1);
-        byte[] utf82 = dcipher.doFinal(decryptedData2);
-        byte[] utf83 = dcipher.doFinal(decryptedData3);
+        String name1 = new String(utf8);
 
-        String name = new String(utf8);
-        String pass = new String(utf81);
-        String ur = new String(utf82);
-        String com = new String(utf83);
-
-        byte[] encoded = key2.getEncoded();
-        String out = Base64.getEncoder().withoutPadding().encodeToString(encoded);
-
-        String iv3 = Base64.getEncoder().withoutPadding().encodeToString(iv2);
-
-        Path path = Paths.get(fileName);
-        OutputStream output = new BufferedOutputStream(Files.newOutputStream(path));
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
-
-        System.out.println("Decrypted info : "+name +","+pass +","+ur +","+com +","+out + ","+iv3);
-
-        writer.write(name +","+pass +","+ur +","+com +","+out + ","+iv3);
-
-        writer.close();
-        return password;
+        return name1;
     }
-
-
-    public void writeWW(String username, String password, String url, String comment, String out, String iv1) throws IOException {
-        String fileName = username + ".txt";
-        Path path = Paths.get(fileName);
-        OutputStream output = new BufferedOutputStream(Files.newOutputStream(path));
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
-        System.out.println("INFO: " + username +","+password +","+url +","+comment +","+out+","+iv1);
-        writer.write(username +","+password +","+url +","+comment +","+out+","+iv1);
-
-        writer.close();
-        output.close();
-
-    }
-
-
-    public static void main(String args[]) throws Exception {
-        Decrypter decrypter = new Decrypter("ABCDEFGHIJKL");
-        String encrypted = decrypter.encryptTest("viso gero");
-        System.out.println(encrypted);
-        String decrypted = decrypter.decrypt(encrypted);
-        String decrypted1 = decrypter.decryptIV(encrypted, decrypter.getKey());
-        System.out.println(decrypted);
-        System.out.println(decrypted1);
-    }
-
-
 
 }

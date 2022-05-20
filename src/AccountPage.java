@@ -29,9 +29,8 @@ public class AccountPage extends JFrame {
     private JButton logOutButton;
     private JLabel infoLabel;
     private JLabel messageLabel;
-
+    private JButton infoButton;
     String pass;
-
 
     public AccountPage(String username, String password) throws Exception {
         setContentPane(mainPanel);
@@ -55,48 +54,32 @@ public class AccountPage extends JFrame {
         String key2 = account[4];
         String iv2 = account[5];
 
-        infoLabel.setText("Info: " + username +", " + ur+", "+ com);
-
-
         Frame[] frames = Frame.getFrames();
         for(Frame f: frames){
             f.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
                     dispose();
-                    try {
-                        String a = decrypter.encrypt(user, pass, ur, com);
-                        System.out.println(a + " File encrypted");
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
                 }
 
             });
         }
-
         logOutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 LoginPage loginPage = new LoginPage();
                 dispose();
-                try {
-                    String a = decrypter.encrypt(user, pass, ur, com);
-                    System.out.println(a + " File encrypted");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
             }
         });
         findPassButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                textField1.setText(password);
+               textField1.setText(pass);
             }
         });
         decryptPassButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                textField1.setText(pass);
+                textField1.setText(password);
             }
         });
         changePassButton.addActionListener(new ActionListener() {
@@ -104,10 +87,47 @@ public class AccountPage extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 pass = textField2.getText();
                 try {
-                    decrypter.writeWW(username, pass,ur,com,key2,iv2);
-                } catch (IOException ex) {
+                    Decrypter decrypter = new Decrypter("ABCDEFGHIJKL");
+                    String fileName = "vardai.txt";
+                    String actua = null;
+                    actua = Files.readString(Path.of(fileName));
+                    String [] account = actua.split("\\n");
+
+                    File file = new File(fileName);
+                    FileWriter fw = new FileWriter(file);
+                    BufferedWriter bw = new BufferedWriter(fw);
+
+                    bw.write(" ");
+                    bw.close();
+
+                    for (int i = 1; i<account.length ; i++) {
+                        String[] ap = account[i].split(",");
+                        if (ap[0].isEmpty()){
+                            System.out.println("XXXX AC FIND");
+                        }else {
+                            String EUS = decrypter.simpleDecrypt(ap[0], ap[2], ap[3]);
+
+                            if(EUS.equals(username)){
+                                //System.out.println(username + "   "+EUS);
+                                String a = username;
+                                String b = pass;
+                                decrypter.encryptVardai2(a,b);
+                            }else {
+
+                                String a = ap[0];
+                                String b = ap[1];
+                                String c = ap[2];
+                                String d = ap[3];
+                                //System.out.println(a+" "+b);
+                                decrypter.addUSer(a,b,c,d);
+                            }
+                        }
+                    }
+
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+
                 messageLabel.setText("Password changed");
             }
         });
@@ -139,25 +159,52 @@ public class AccountPage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                try
-                {
-                    File f= new File(fileName);           //file to be delete
-                    if(f.delete())                      //returns Boolean value
-                    {
-                        System.out.println(f.getName() + " deleted");   //getting and printing the file name
+                try {
+                    Decrypter decrypter = new Decrypter("ABCDEFGHIJKL");
+                    String fileName = "vardai.txt";
+                    String actua = null;
+                    actua = Files.readString(Path.of(fileName));
+                    String [] account = actua.split("\\n");
+
+                    File file = new File(fileName);
+                    FileWriter fw = new FileWriter(file);
+                    BufferedWriter bw = new BufferedWriter(fw);
+
+                    bw.write(" ");
+                    bw.close();
+
+                    for (int i = 1; i<account.length ; i++) {
+                        String[] ap = account[i].split(",");
+                        if (ap[0].isEmpty()){
+                            System.out.println("XXXX AC DEL");
+                        }else {
+                            String EUS = decrypter.simpleDecrypt(ap[0], ap[2], ap[3]);
+                            if(EUS.equals(username)){
+                                System.out.println(username + "   "+EUS);
+
+                            }else {
+                                String a = ap[0];
+                                String b = ap[1];
+                                String c = ap[2];
+                                String d = ap[3];
+                                //System.out.println(a+" "+b);
+                                decrypter.addUSer(a,b,c,d);
+                            }
+                        }
                     }
-                    else
-                    {
-                        System.out.println("failed");
-                    }
-                }
-                catch(Exception exe)
-                {
-                    exe.printStackTrace();
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
                 dispose();
                 LoginPage loginPage = new LoginPage();
 
+            }
+        });
+        infoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                InfoPage infoPage = new InfoPage(username);
             }
         });
     }
